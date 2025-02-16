@@ -6,7 +6,6 @@
     pkgs.dart
     pkgs.flutter
     pkgs.sdkmanager
-    pkgs.android-studio
     pkgs.android-tools
     pkgs.gradle
   ];
