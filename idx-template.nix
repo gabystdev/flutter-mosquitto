@@ -5,9 +5,6 @@
     pkgs.unzip
     pkgs.dart
     pkgs.flutter
-    pkgs.sdkmanager
-    pkgs.android-tools
-    pkgs.gradle
   ];
   
   # Shell script that produces the final environment
