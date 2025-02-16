@@ -9,12 +9,6 @@
     pkgs.android-tools
     pkgs.gradle
   ];
-
-  env = {
-    ANDROID_HOME = "$HOME/android-sdk";
-    ANDROID_SDK_ROOT = "$HOME/android-sdk";
-    ANDROID_AVD_HOME = "$HOME/.android/avd";
-  };
   
   # Shell script that produces the final environment
   bootstrap = ''
@@ -31,11 +25,9 @@
     rm -rf "$out/.git" "$out/idx-template".{nix,json}
 
     echo "⚙️ Instalando dependencias de Flutter..."
+    cd "$out"
     flutter doctor
+    flutter create .
     flutter pub get
-
-    echo "⚙️ Configurando Android SDK y creando AVD..."
-    mkdir -p $ANDROID_HOME
-    sdkmanager "platform-tools" "platforms;android-34" "system-images;android-34;google_apis;x86_64"
   '';
 }
