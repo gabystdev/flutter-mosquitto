@@ -5,7 +5,7 @@
     pkgs.unzip
     pkgs.dart
     pkgs.flutter
-    pkgs.android-sdk
+    pkgs.sdkmanager
     pkgs.android-studio
     pkgs.android-tools
     pkgs.gradle
