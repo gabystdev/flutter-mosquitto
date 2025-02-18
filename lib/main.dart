@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _connect() async {
     client = MqttServerClient(broker, clientId);
     client.port = port;
-    client.logging(on: true);git branch -M main
+    client.logging(on: true);
     client.onConnected = _onConnected;
     client.onDisconnected = _onDisconnected;
 
