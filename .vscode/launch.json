@@ -16,7 +16,8 @@
                 "android",
                 "-d",
                 "localhost:5555"
-            ]
+            ],
+            "preLaunchTask": "Run Data Processor"
 
         },
         {

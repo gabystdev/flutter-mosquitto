@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   mqtt_client: 10.5.0
+  fl_chart: ^0.70.2
   flutter:
     sdk: flutter
 
