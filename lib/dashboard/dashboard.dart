@@ -1,3 +1,4 @@
+import 'dart:async'; // Para usar StreamController
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -15,6 +16,15 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   MqttServerClient? client;
+
+  // StreamControllers para cada tipo de dato
+  final StreamController<List<FlSpot>> temperatureStreamController =
+      StreamController<List<FlSpot>>.broadcast();
+  final StreamController<List<FlSpot>> humidityStreamController =
+      StreamController<List<FlSpot>>.broadcast();
+  final StreamController<List<FlSpot>> pressureStreamController =
+      StreamController<List<FlSpot>>.broadcast();
+
   List<FlSpot> temperatureData = [];
   List<FlSpot> humidityData = [];
   List<FlSpot> pressureData = [];
@@ -51,6 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
     client?.subscribe('$topicPrefix/temperature', MqttQos.atLeastOnce);
     client?.subscribe('$topicPrefix/humidity', MqttQos.atLeastOnce);
     client?.subscribe('$topicPrefix/pressure', MqttQos.atLeastOnce);
+
     client?.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;
       final pt = MqttPublishPayload.bytesToStringAsString(
@@ -65,10 +76,19 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         if (topic == '$topicPrefix/temperature') {
           temperatureData.add(data);
+          temperatureStreamController.sink.add(
+            temperatureData,
+          ); // Emitir los datos actualizados
         } else if (topic == '$topicPrefix/humidity') {
           humidityData.add(data);
+          humidityStreamController.sink.add(
+            humidityData,
+          ); // Emitir los datos actualizados
         } else if (topic == '$topicPrefix/pressure') {
           pressureData.add(data);
+          pressureStreamController.sink.add(
+            pressureData,
+          ); // Emitir los datos actualizados
         }
       });
     });
@@ -90,7 +110,7 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Expanded(
             child: SensorChart.barChart(
-              data: temperatureData,
+              dataStream: temperatureStreamController.stream, // Usar el Stream
               title: 'Temperature',
               yAxisTitle: '°C',
               lineColor: Colors.red,
@@ -98,7 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           Expanded(
             child: SensorChart.lineChart(
-              data: humidityData,
+              dataStream: humidityStreamController.stream, // Usar el Stream
               title: 'Humidity',
               yAxisTitle: '%',
               lineColor: Colors.blue,
@@ -106,7 +126,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           Expanded(
             child: SensorChart.lineChart(
-              data: pressureData,
+              dataStream: pressureStreamController.stream, // Usar el Stream
               title: 'Pressure',
               yAxisTitle: 'hPa',
               lineColor: Colors.green,
@@ -115,5 +135,14 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Asegurarse de cerrar los StreamControllers al salir del widget
+    temperatureStreamController.close();
+    humidityStreamController.close();
+    pressureStreamController.close();
+    super.dispose();
   }
 }

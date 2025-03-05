@@ -32,7 +32,7 @@ void main() async {
       SensorSimulator(
         topic: '$topicPrefix/humidity',
         client: client,
-        randomRange: (30, 50),
+        randomRange: (30, 80),
       ),
       SensorSimulator(
         topic: '$topicPrefix/pressure',
@@ -59,11 +59,13 @@ class SensorSimulator {
 
   void start() {
     final rand = Random();
-    Timer.periodic(Duration(seconds: rand.nextInt(5)), (timer) {
+    Timer.periodic(Duration(seconds: rand.nextInt(3) + rand.nextInt(6)), (
+      timer,
+    ) {
       final payloadBuilder = MqttClientPayloadBuilder();
-      final temp = randomRange.$1 + rand.nextInt(randomRange.$2);
+      final value = randomRange.$1 + rand.nextInt(randomRange.$2);
       if (payloadBuilder case MqttClientPayloadBuilder(:final payload?)) {
-        payloadBuilder.addString('$temp');
+        payloadBuilder.addString('$value');
         client.publishMessage(topic, MqttQos.atLeastOnce, payload);
       }
     });
